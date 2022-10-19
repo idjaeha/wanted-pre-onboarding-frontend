@@ -1,10 +1,7 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { createTodo } from "../api/createTodo";
-import { deleteTodo } from "../api/deleteTodo";
-import { getTodos } from "../api/getTodos";
-import { updateTodo } from "../api/updateTodo";
 import { useInput } from "../hooks/useInput";
+import { useTodoList } from "../hooks/useTodoList";
 import { env } from "../utils/env";
 
 type TodoType = {
@@ -17,83 +14,45 @@ type TodoType = {
 
 const TodoPage = () => {
   const navigate = useNavigate();
-  const [todos, setTodos] = useState<TodoType[]>([]);
+  const { todos, createTodo, deleteTodo, updateTodo, changeEditingMode } =
+    useTodoList();
   const [todo, changeTodo, clearTodo] = useInput("");
-
-  const loadTodos = useCallback(async () => {
-    try {
-      const response = await getTodos();
-      if (response.status === 200) {
-        setTodos(
-          response.data.map((value) => ({ ...value, isEditing: false }))
-        );
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  }, []);
 
   const handleSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>, todo: string) => {
       event.preventDefault();
-      try {
-        const response = await createTodo({ todo });
-        if (response.status === 201) {
-          loadTodos();
-          clearTodo();
-        }
-      } catch (err) {
-        console.log(err);
-      }
+      createTodo(todo);
+      clearTodo();
     },
-    [clearTodo, loadTodos]
+    [clearTodo, createTodo]
   );
 
   const handleDelete = useCallback(
     async (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
       event.preventDefault();
-      try {
-        const response = await deleteTodo({ id });
-        if (response.status === 204) {
-          await loadTodos();
-        }
-      } catch (err) {
-        console.log(err);
-      }
+      deleteTodo(id);
     },
-    [loadTodos]
+    [deleteTodo]
   );
 
-  const changeEditingMode = useCallback(
-    (index: number, todos: TodoType[], mode: boolean) => {
-      todos[index].isEditing = mode;
-      setTodos(todos.slice());
+  const handleUpdateIsCompleted = useCallback(
+    async (index: number, item: TodoType, todos: TodoType[]) => {
+      updateTodo(item.id, index, todos, item.todo, !item.isCompleted);
     },
-    []
+    [updateTodo]
   );
 
-  const handleUpdate = useCallback(
+  const handleUpdateTodo = useCallback(
     async (
-      id: number,
       index: number,
+      item: TodoType,
       todos: TodoType[],
-      todo: string,
-      isCompleted: boolean
+      newTodo: string
     ) => {
-      try {
-        const response = await updateTodo({ id, todo, isCompleted });
-        if (response.status === 200) {
-          todos[index] = { ...response.data, isEditing: false };
-          setTodos(todos.slice());
-        }
-      } catch (err) {}
+      updateTodo(item.id, index, todos, newTodo, item.isCompleted);
     },
-    []
+    [updateTodo]
   );
-
-  useEffect(() => {
-    loadTodos();
-  }, [loadTodos]);
 
   useEffect(() => {
     if (window.localStorage.getItem(env.access_token_name) === null) {
@@ -113,13 +72,7 @@ const TodoPage = () => {
               type="checkbox"
               checked={item.isCompleted}
               onChange={() => {
-                handleUpdate(
-                  item.id,
-                  index,
-                  todos,
-                  item.todo,
-                  !item.isCompleted
-                );
+                handleUpdateIsCompleted(index, item, todos);
               }}
             />
             {item.isEditing === true ? (
@@ -127,12 +80,11 @@ const TodoPage = () => {
                 <form
                   onSubmit={(event) => {
                     event.preventDefault();
-                    handleUpdate(
-                      item.id,
+                    handleUpdateTodo(
                       index,
+                      item,
                       todos,
-                      event.currentTarget["editingTodo"].value,
-                      item.isCompleted
+                      event.currentTarget["editingTodo"].value
                     );
                   }}
                 >

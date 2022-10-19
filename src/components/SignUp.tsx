@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { requestSignUp, RequestSignUpErrorType } from "../api/requestSignUp";
+import { signUpApi, SignUpApiErrorType } from "../api/signUpApi";
 import { useInput } from "../hooks/useInput";
 import { saveAccessToken } from "../utils/saveAccessToken";
 
@@ -14,12 +14,12 @@ const SignUp = () => {
   const signUp: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
     try {
-      const response = await requestSignUp({ email, password });
+      const response = await signUpApi({ email, password });
       saveAccessToken(response.data.access_token);
       navigate("/todo");
     } catch (error) {
       if (axios.isAxiosError(error) === true) {
-        const requestSignUpError = error as RequestSignUpErrorType;
+        const requestSignUpError = error as SignUpApiErrorType;
         const errorMessage = requestSignUpError.response?.data.message;
         if (errorMessage instanceof Array) {
           alert(errorMessage.join("\n"));

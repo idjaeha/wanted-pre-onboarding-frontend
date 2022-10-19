@@ -12,7 +12,7 @@ type CreateTodoResponseType = {
   userId: number;
 };
 
-const createTodo = ({ todo }: CreateTodoArgType) =>
+const createTodoApi = ({ todo }: CreateTodoArgType) =>
   instance.post<CreateTodoResponseType>(
     "todos",
     { todo },
@@ -24,4 +24,4 @@ const createTodo = ({ todo }: CreateTodoArgType) =>
     }
   );
 
-export { createTodo };
+export { createTodoApi };

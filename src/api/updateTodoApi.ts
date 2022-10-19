@@ -14,7 +14,7 @@ type UpdateTodoResponseType = {
   userId: number;
 };
 
-const updateTodo = ({ id, todo, isCompleted }: UpdateTodoArgType) =>
+const updateTodoApi = ({ id, todo, isCompleted }: UpdateTodoArgType) =>
   instance.put<UpdateTodoResponseType>(
     `todos/${id}`,
     {
@@ -29,4 +29,4 @@ const updateTodo = ({ id, todo, isCompleted }: UpdateTodoArgType) =>
     }
   );
 
-export { updateTodo };
+export { updateTodoApi };

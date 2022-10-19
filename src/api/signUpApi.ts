@@ -2,18 +2,18 @@ import { AxiosError } from "axios";
 import { instance } from "./instance";
 import { ResponseAccessTokenType } from "./types";
 
-export type RequestSignUpArgType = {
+export type SignUpApiArgType = {
   email: string;
   password: string;
 };
 
-export type RequestSignUpErrorType = AxiosError<{
+export type SignUpApiErrorType = AxiosError<{
   statusCode: number;
   message: string | Array<string>;
   error: string;
 }>;
 
-const requestSignUp = ({ email, password }: RequestSignUpArgType) =>
+const signUpApi = ({ email, password }: SignUpApiArgType) =>
   instance.post<ResponseAccessTokenType>(
     "/auth/signup",
     { email, password },
@@ -24,4 +24,4 @@ const requestSignUp = ({ email, password }: RequestSignUpArgType) =>
     }
   );
 
-export { requestSignUp };
+export { signUpApi };

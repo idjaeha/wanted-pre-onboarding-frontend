@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { requestSignIn, RequestSignInErrorType } from "../api/requestSignIn";
+import { signInApi, SignInApiErrorType } from "../api/signInApi";
 import { useInput } from "../hooks/useInput";
 import { saveAccessToken } from "../utils/saveAccessToken";
 
@@ -14,12 +14,12 @@ const SignIn = () => {
   const signIn: React.FormEventHandler<HTMLFormElement> = async (event) => {
     event.preventDefault();
     try {
-      const response = await requestSignIn({ email, password });
+      const response = await signInApi({ email, password });
       saveAccessToken(response.data.access_token);
       navigate("/todo");
     } catch (error) {
       if (axios.isAxiosError(error) === true) {
-        const requestSignInError = error as RequestSignInErrorType;
+        const requestSignInError = error as SignInApiErrorType;
         const statusCode = requestSignInError.response?.data.statusCode;
         if (statusCode === 401) {
           alert("비밀번호를 확인해주세요.");
