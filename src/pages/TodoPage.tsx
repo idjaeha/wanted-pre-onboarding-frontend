@@ -1,58 +1,21 @@
-import React, { useCallback, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useInput } from "../hooks/useInput";
 import { useTodoList } from "../hooks/useTodoList";
 import { env } from "../utils/env";
 
-type TodoType = {
-  id: number;
-  todo: string;
-  isCompleted: boolean;
-  userId: number;
-  isEditing: boolean;
-};
-
 const TodoPage = () => {
   const navigate = useNavigate();
-  const { todos, createTodo, deleteTodo, updateTodo, changeEditingMode } =
-    useTodoList();
-  const [todo, changeTodo, clearTodo] = useInput("");
-
-  const handleSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>, todo: string) => {
-      event.preventDefault();
-      createTodo(todo);
-      clearTodo();
-    },
-    [clearTodo, createTodo]
-  );
-
-  const handleDelete = useCallback(
-    async (event: React.MouseEvent<HTMLButtonElement>, id: number) => {
-      event.preventDefault();
-      deleteTodo(id);
-    },
-    [deleteTodo]
-  );
-
-  const handleUpdateIsCompleted = useCallback(
-    async (index: number, item: TodoType, todos: TodoType[]) => {
-      updateTodo(item.id, index, todos, item.todo, !item.isCompleted);
-    },
-    [updateTodo]
-  );
-
-  const handleUpdateTodo = useCallback(
-    async (
-      index: number,
-      item: TodoType,
-      todos: TodoType[],
-      newTodo: string
-    ) => {
-      updateTodo(item.id, index, todos, newTodo, item.isCompleted);
-    },
-    [updateTodo]
-  );
+  const {
+    todos,
+    createTodo,
+    deleteTodo,
+    updateTodo,
+    updateIsCompleted,
+    changeEditingMode,
+  } = useTodoList();
+  const [todoInputValue, changeTodoInputValue, clearTodoInputValue] =
+    useInput("");
 
   useEffect(() => {
     if (window.localStorage.getItem(env.access_token_name) === null) {
@@ -61,67 +24,74 @@ const TodoPage = () => {
   }, [navigate]);
 
   return (
-    <div>
-      <form onSubmit={(event) => handleSubmit(event, todo)}>
-        <input type="text" value={todo} onChange={changeTodo} />
+    <section>
+      <h1>투두를 작성해봅시다!</h1>
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          createTodo(todoInputValue);
+          clearTodoInputValue();
+        }}
+      >
+        <input
+          type="text"
+          value={todoInputValue}
+          onChange={changeTodoInputValue}
+        />
+        <button type="submit">추가</button>
       </form>
+      <br />
       <ul>
-        {todos.map((item, index, todos) => (
+        {todos.map((item) => (
           <li key={item.id}>
-            <input
-              type="checkbox"
-              checked={item.isCompleted}
-              onChange={() => {
-                handleUpdateIsCompleted(index, item, todos);
-              }}
-            />
             {item.isEditing === true ? (
-              <div>
+              <>
                 <form
                   onSubmit={(event) => {
                     event.preventDefault();
-                    handleUpdateTodo(
-                      index,
+                    updateTodo(
                       item,
-                      todos,
-                      event.currentTarget["editingTodo"].value
+                      event.currentTarget[`editingTodo-${item.id}`].value
                     );
                   }}
                 >
-                  <input id="editingTodo" defaultValue={item.todo} />
-                  <button type="submit">제출</button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      changeEditingMode(index, todos, false);
-                    }}
-                  >
-                    취소
-                  </button>
+                  <input
+                    id={`editingTodo-${item.id}`}
+                    defaultValue={item.todo}
+                  />
+                  <span>
+                    <button type="submit">제출</button>
+                    <button
+                      type="button"
+                      onClick={() => changeEditingMode(item, false)}
+                    >
+                      취소
+                    </button>
+                  </span>
                 </form>
-              </div>
+              </>
             ) : (
-              <div>
+              <>
+                <input
+                  type="checkbox"
+                  checked={item.isCompleted}
+                  onChange={() => updateIsCompleted(item)}
+                />
                 <div>{item.todo}</div>
-                <button
-                  onClick={() => {
-                    changeEditingMode(index, todos, true);
-                  }}
-                >
-                  수정
-                </button>
-              </div>
+                <span>
+                  <button onClick={() => changeEditingMode(item, true)}>
+                    수정
+                  </button>
+                  <button onClick={() => deleteTodo(item)} type="button">
+                    삭제
+                  </button>
+                </span>
+              </>
             )}
-            <button
-              onClick={(event) => handleDelete(event, item.id)}
-              type="button"
-            >
-              삭제
-            </button>
           </li>
         ))}
       </ul>
-    </div>
+    </section>
   );
 };
 

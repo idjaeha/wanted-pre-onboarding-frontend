@@ -3,6 +3,7 @@ import { createTodoApi } from "../api/createTodoApi";
 import { deleteTodoApi } from "../api/deleteTodoApi";
 import { getTodosApi } from "../api/getTodosApi";
 import { updateTodoApi } from "../api/updateTodoApi";
+import { useInput } from "./useInput";
 
 export type TodoType = {
   id: number;
@@ -13,7 +14,9 @@ export type TodoType = {
 };
 
 const useTodoList = () => {
-  // Context API 고려하기
+  const [todoInputValue, changeTodoInputValue, clearTodoInputValue] =
+    useInput("");
+
   const [todos, setTodos] = useState<TodoType[]>([]);
 
   const getTodos = useCallback(async () => {
@@ -25,8 +28,7 @@ const useTodoList = () => {
         );
       }
     } catch (err) {
-      // TODO: 에러 처리하기
-      console.log(err);
+      alert("todo List를 가져오는것을 실패했습니다.");
     }
   }, []);
 
@@ -36,64 +38,98 @@ const useTodoList = () => {
         const response = await createTodoApi({ todo });
         if (response.status === 201) {
           await getTodos();
+          clearTodoInputValue();
         }
       } catch (err) {
-        // TODO: 에러 처리하기
-        console.log(err);
+        alert("생성에 실패했습니다.");
       }
     },
-    [getTodos]
+    [clearTodoInputValue, getTodos]
   );
 
   const deleteTodo = useCallback(
-    async (id: number) => {
+    async (item: TodoType) => {
       try {
-        const response = await deleteTodoApi({ id });
+        const response = await deleteTodoApi({ id: item.id });
         if (response.status === 204) {
           await getTodos();
         }
       } catch (err) {
-        // TODO: 에러 처리하기
-        console.log(err);
+        alert("삭제에 실패했습니다.");
       }
     },
     [getTodos]
   );
 
-  const updateTodo = useCallback(
-    async (
-      id: number,
-      index: number,
-      todos: TodoType[],
-      todo: string,
-      isCompleted: boolean
-    ) => {
-      try {
-        const response = await updateTodoApi({ id, todo, isCompleted });
-        if (response.status === 200) {
-          todos[index] = { ...response.data, isEditing: false };
-          setTodos(todos.slice());
-        }
-      } catch (err) {
-        // TODO: 에러 처리하기
+  const updateTodo = useCallback(async (item: TodoType, newTodo: string) => {
+    try {
+      const response = await updateTodoApi({
+        id: item.id,
+        todo: newTodo,
+        isCompleted: item.isCompleted,
+      });
+      if (response.status === 200) {
+        setTodos((todos) =>
+          todos.map((curTodo) => {
+            if (curTodo.id === response.data.id) {
+              curTodo.todo = response.data.todo;
+            }
+            return curTodo;
+          })
+        );
       }
-    },
-    []
-  );
+    } catch (err) {
+      alert("수정에 실패했습니다.");
+    }
+  }, []);
 
-  const changeEditingMode = useCallback(
-    (index: number, todos: TodoType[], mode: boolean) => {
-      todos[index].isEditing = mode;
-      setTodos(todos.slice());
-    },
-    []
-  );
+  const updateIsCompleted = useCallback(async (item: TodoType) => {
+    try {
+      const response = await updateTodoApi({
+        id: item.id,
+        todo: item.todo,
+        isCompleted: !item.isCompleted,
+      });
+      if (response.status === 200) {
+        setTodos((todos) =>
+          todos.map((todo) => {
+            if (todo.id === item.id) {
+              todo.isCompleted = response.data.isCompleted;
+            }
+            return todo;
+          })
+        );
+      }
+    } catch (err) {
+      alert("체크 변경에 실패했습니다.");
+    }
+  }, []);
+
+  const changeEditingMode = useCallback((todo: TodoType, mode: boolean) => {
+    setTodos((todos) =>
+      todos.map((cur) => {
+        if (cur.id === todo.id) {
+          cur.isEditing = mode;
+        }
+        return cur;
+      })
+    );
+  }, []);
 
   useEffect(() => {
     getTodos();
   }, [getTodos]);
 
-  return { todos, createTodo, deleteTodo, updateTodo, changeEditingMode };
+  return {
+    todoInputValue,
+    changeTodoInputValue,
+    todos,
+    createTodo,
+    deleteTodo,
+    updateTodo,
+    updateIsCompleted,
+    changeEditingMode,
+  };
 };
 
 export { useTodoList };
