@@ -12,5 +12,5 @@ REACT_APP_TODO_SERVER_BASE_URL=[원티드 TODO API URL]
 ```
 
 # 배포 링크
-아래 링크를 통해 배포된 Todo앱을 사용해볼 수 있습니다.
+아래 링크를 통해 배포된 Todo앱을 사용해볼 수 있습니다.<br/>
 https://wanted-pre-onboarding-frontend-five.vercel.app/
