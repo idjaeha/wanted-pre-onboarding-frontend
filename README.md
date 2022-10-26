@@ -7,13 +7,16 @@
 - 아이디와 비밀번호의 값이 바뀔 때마다 `useEffect`를 통해 값을 비교함.
 
 #### 로그인
-- 
+- form의 submit 기능을 이용하여 요청을 보내 로그인하는 로직.
+- 로그인이 성공하면 todo로 redirect
 
 #### 회원가입
--
+- 로그인과 마찬가지로 form의 submit 기능을 이용하여 요청을 보내 로그인하는 로직.
+- 회원가입이 성공하면 todo로 redirect
 
 #### TODO CRUD
--
+- 모든 todoList의 CRUD는 `useTodoList` 라는 커스텀 훅을 통해 진행함.
+- 그것을 보여주는 `TodoPage.tsx`는 단순히 각 기능에 맞는 요청을 보내고 todo를 보여주기만 함.
 
 #### 리다이렉트
 - 리다이렉트가 필요한 페이지 컴포넌트에서 `useEffect` 로 리다이렉트를 처리합니다.
