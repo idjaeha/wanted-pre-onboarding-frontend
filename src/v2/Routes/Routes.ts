@@ -8,22 +8,28 @@ const routePath = {
   todo: "/todo",
 };
 
+const routeType = {
+  requireLoggedIn: "requireLoggedIn",
+  requireNotLoggedIn: "requireNotLoggedIn",
+  public: "public",
+} as const;
+
 const routes = [
   {
     path: routePath.signIn,
     element: SignInPage,
-    isPrivate: false,
+    type: routeType.requireNotLoggedIn,
   },
   {
     path: routePath.signUp,
     element: SignUpPage,
-    isPrivate: false,
+    type: routeType.requireNotLoggedIn,
   },
   {
     path: routePath.todo,
     element: TodoPage,
-    isPrivate: true,
+    type: routeType.requireLoggedIn,
   },
 ];
 
-export { routes, routePath };
+export { routes, routePath, routeType };
