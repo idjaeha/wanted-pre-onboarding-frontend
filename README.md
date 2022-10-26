@@ -42,6 +42,7 @@
   - 각 라우트에 매칭되는 페이지 컴포넌트를 저장한 디렉토리
 - utils
   - 그 외에 자주 사용되는 기능을 저장한 디렉토리
+<br />
 
 ### 아쉬운 점
 TodoPage의 경우에는 내부를 구성하는 TodoList를 다른 컴포넌트로 분리할 수 있었는데 그렇게 진행하지 못했다.
@@ -230,39 +231,27 @@ const deleteTodo = useCallback(
 ### 리다이렉트
 - 리다이렉트가 필요한 페이지 컴포넌트에서 `useEffect` 로 리다이렉트를 처리합니다.
 - 코드 예시 (SignInPage.tsx)
-  ```
-  useEffect(() => {
-    if (window.localStorage.getItem(env.access_token_name)) {
-      navigate("/todo");
-    }
-  }, [navigate]);
-  ```
+
+```typescript
+useEffect(() => {
+  if (window.localStorage.getItem(env.access_token_name)) {
+    navigate("/todo");
+  }
+}, [navigate]);
+```
+<br />
+
 - 아쉬운 점
   - 페이지 내부에서 처리하게 되면 추후에 서비스에서 리다이렉트가 어떻게 처리되고 있는지 알아내기 위해 리다이렉트가 일어나는 페이지를 모두 탐색해야해서 실수가 유발될 수 있음.
   - 페이지 컴포넌트가 페이지를 렌더링하는 내용 뿐만 아니라 리다이렉트를 하는 기능도 담당하고 있음.
-  
-<br/>
-<br/>
-
-
-
-### 
 
 <br />
-<br />
-<br />
+<br />  
 
 ---
 
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
+<br />
+<br />
 
 # 프리온보딩 사전과제
 
