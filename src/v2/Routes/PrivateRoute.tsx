@@ -1,19 +1,19 @@
 import React from "react";
 import { Outlet, Navigate } from "react-router-dom";
 import { getAccessToken } from "../utils/getAccessToken";
-import { routePath, routeType } from "./Routes";
+import { routePath, routeAuthority } from "./Routes";
 
-type PropTypes = { type: string };
-const PrivateRoute = ({ type }: PropTypes) => {
+type PropTypes = { authority: string };
+const PrivateRoute = ({ authority }: PropTypes) => {
   const isAuthenticated = getAccessToken() !== null;
 
-  if (type === routeType.requireLoggedIn) {
+  if (authority === routeAuthority.requireLoggedIn) {
     return isAuthenticated === true ? (
       <Outlet />
     ) : (
       <Navigate to={routePath.signIn} />
     );
-  } else if (type === routeType.requireNotLoggedIn) {
+  } else if (authority === routeAuthority.requireNotLoggedIn) {
     return isAuthenticated === true ? (
       <Navigate to={routePath.todo} />
     ) : (

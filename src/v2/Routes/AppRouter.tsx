@@ -5,8 +5,12 @@ import { routes } from "./Routes";
 const AppRouter = () => {
   return (
     <Routes>
-      {routes.map(({ path, element: Element, type }) => (
-        <Route key={path} path={path} element={<PrivateRoute type={type} />}>
+      {routes.map(({ path, element: Element, authority }) => (
+        <Route
+          key={path}
+          path={path}
+          element={<PrivateRoute authority={authority} />}
+        >
           <Route path={path} element={<Element />} />
         </Route>
       ))}

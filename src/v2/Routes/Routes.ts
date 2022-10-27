@@ -8,7 +8,7 @@ const routePath = {
   todo: "/todo",
 };
 
-const routeType = {
+const routeAuthority = {
   requireLoggedIn: "requireLoggedIn",
   requireNotLoggedIn: "requireNotLoggedIn",
   public: "public",
@@ -18,18 +18,18 @@ const routes = [
   {
     path: routePath.signIn,
     element: SignInPage,
-    type: routeType.requireNotLoggedIn,
+    authority: routeAuthority.requireNotLoggedIn,
   },
   {
     path: routePath.signUp,
     element: SignUpPage,
-    type: routeType.requireNotLoggedIn,
+    authority: routeAuthority.requireNotLoggedIn,
   },
   {
     path: routePath.todo,
     element: TodoPage,
-    type: routeType.requireLoggedIn,
+    authority: routeAuthority.requireLoggedIn,
   },
 ];
 
-export { routes, routePath, routeType };
+export { routes, routePath, routeAuthority };
